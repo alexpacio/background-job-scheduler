@@ -1,0 +1,6 @@
+[
+    {
+        "scheduleParams": "* * * * *",
+        "commandToExecute": "node -e \"console.log(1+1)\""
+    }
+]
