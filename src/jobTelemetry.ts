@@ -139,6 +139,7 @@ export class JobTelemetry {
             executionId: this.jobMetadata.jobExecutionId,
             scheduleParams: this.scheduleParams,
             title: "[ERROR] JOB ENDED - SCHEDULE SETTINGS:",
+            errorReason: reason.message,
             executionTimeInSec: `${(this.jobMetadata.endDate.getTime() - this.jobMetadata.startDate.getTime()) / 1000}`
         });
         console.log(msg);

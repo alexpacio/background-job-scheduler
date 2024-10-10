@@ -1,7 +1,7 @@
 {
-  "name": "scheduler",
+  "name": "background-job-scheduler",
   "version": "1.0.0",
-  "description": "",
+  "description": "A toy Background Job Scheduler that you can use to spawn process every time the Vixie Cron you define triggers.",
   "main": "index.js",
   "scripts": {
     "compile-win": "node_modules\\.bin\\rimraf dist && node_modules\\.bin\\tsc --project tsconfig.json",
@@ -11,25 +11,24 @@
     "test:watch": "npm run jest -- --watch",
     "test": "npm run test:unit"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Alessandro Bolletta",
+  "license": "GPLv3",
   "devDependencies": {
     "@types/node": "^18.11.18",
     "@types/node-telegram-bot-api": "^0.64.7",
     "@types/nodemailer": "^6.4.16",
-    "@types/wtfnode": "^0.7.3",
     "rimraf": "^4.1.2",
-    "typescript": "^4.9.5"
+    "typescript": "^5.6.3",
+    "@types/jest": "^29.5.13",
+    "ts-jest": "^29.2.5",
+    "jest": "^29.7.0"
   },
   "dependencies": {
-    "@types/jest": "^29.5.13",
     "async-mutex": "^0.5.0",
     "chokidar": "^4.0.1",
     "croner": "^8.1.2",
-    "jest": "^29.7.0",
     "node-telegram-bot-api": "^0.66.0",
     "nodemailer": "^6.9.15",
-    "split-cmd": "^1.1.0",
-    "ts-jest": "^29.2.5"
+    "split-cmd": "^1.1.0"
   }
 }

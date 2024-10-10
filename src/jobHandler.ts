@@ -40,7 +40,7 @@ export class JobScheduler {
         await this.handleNewConfigFile();
     }
 
-    private async handleNewConfigFile() {
+    public async handleNewConfigFile() {
         this.stopAllJobs(false);
         await this.schedules.mutex.runExclusive(async () => {
             this.schedules.crontab = (await this.loadSettingsFromFile()).map(elm => Object.assign(elm, { cronTask: null, spawnObject: null, lastResultOutput: null }));

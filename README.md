@@ -1,6 +1,6 @@
 # background-job-scheduler
 
-A basic Background Jobs Scheduler that you can use to spawn process every time the Vixie Cron you define triggers.
+A toy Background Job Scheduler that you can use to spawn process every time the Vixie Cron you define triggers.
 It starts a process that runs forever.
 Telemetry is included to gather job execution reports via a Telegram bot and/or via email.
 
@@ -18,6 +18,8 @@ You can run unit test:
 
 Start the app:
 - npm run start
+
+You can change the crontab definition file at runtime. It'll be ingested if a SIGHUP is sent to the process or as the file watcher captures the change (polling is set to every minute).
 
 ## Tunables
 
