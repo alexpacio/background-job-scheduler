@@ -40,7 +40,7 @@ describe('jobs', () => {
             await writeFile(CRONTAB_FILE_ABS_PATH, JSON.stringify([
                 {
                     "scheduleParams": "* * * * *",
-                    "commandToExecute": "node -e \"console.log(1+1)\""
+                    "commandToExecute": "node -e \"process.exit(1)\""
                 }
             ] as CrontabEntryStateDefinition[]));
             const scheduler = await initScheduler();
@@ -50,14 +50,15 @@ describe('jobs', () => {
 
             await scheduler.getSchedules()[0].cronTask.trigger();
             while (scheduler.getSchedules()[0].cronTask.isBusy() === true) {
-                console.log(scheduler.getSchedules()[0].cronTask.isBusy());
                 await wait(1000);
             }
+
+            expect(scheduler.getSchedules()[0].lastResultOutput).toEqual(`Child process exited with code 1`);
 
             await writeFile(CRONTAB_FILE_ABS_PATH, JSON.stringify([
                 {
                     "scheduleParams": "* * * * *",
-                    "commandToExecute": "node -e \"console.log(1+1)\""
+                    "commandToExecute": "node -e \"console.log(2+2)\""
                 },
                 {
                     "scheduleParams": "* * * * *",
@@ -72,7 +73,6 @@ describe('jobs', () => {
             for (const schedule of scheduler.getSchedules()) {
                 await schedule.cronTask.trigger();
                 while (schedule.cronTask.isBusy() === true) {
-                    console.log(schedule.cronTask.isBusy());
                     await wait(1000);
                 }
                 expect(schedule.lastResultOutput).toEqual(`Child process exited with code 0`);
