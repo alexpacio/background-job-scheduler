@@ -13,10 +13,15 @@ export interface ScheduleMainState {
 
 type CrontabEntryState = CrontabEntryStateDefinition & { cronTask: Cron, spawnObject: ChildProcessWithoutNullStreams, lastResultOutput: string };
 
-export interface CrontabEntryStateDefinition {
+export interface CrontabEntryStateDefinition extends CrontabEntryFileDefinition {
+    isRunning: boolean;
+}
+
+export interface CrontabEntryFileDefinition {
     scheduleParams: string;
     commandToExecute: string;
-    isRunning: boolean;
+    userUid?: number;
+    groupGid?: number;
 }
 
 export const CRONTAB_FILE_ABS_PATH = process.env.CRONTAB_FILE_ABS_PATH ?? "crontab.json";
@@ -56,8 +61,8 @@ export class JobScheduler {
                     try {
                         const spawnResult = await new Promise<string>((res, rej) => {
                             scheduleSetting.spawnObject = spawn(listOfArgs.command, listOfArgs.args, {
-                                uid: process.env.WWW_DATA_UID ? parseInt(process.env.WWW_DATA_UID) : undefined,
-                                gid: process.env.WWW_DATA_GID ? parseInt(process.env.WWW_DATA_GID) : undefined,
+                                uid: scheduleSetting.userUid ?? parseInt(process.env.WWW_DATA_UID),
+                                gid: scheduleSetting.groupGid ?? parseInt(process.env.WWW_DATA_GID),
                                 cwd: process.env.PROJECT_BASE_PATH
                             });
                             scheduleSetting.spawnObject.stdout.on('data', (data) => {
@@ -91,11 +96,11 @@ export class JobScheduler {
 
     startEventListenersCrontabFile() {
         this.fileWatcher = chokidar.watch(CRONTAB_FILE_ABS_PATH, { usePolling: true, interval: 60000, ignoreInitial: true }).on('all', () => {
-            console.log("Starting the fileWatcher");
+            console.log("fileWatcher listener has detected a change on the json crontab file. Reloading it.");
             this.handleNewConfigFile();
         });
         this.sighupListener = process.on("SIGHUP", async () => {
-            console.log("Starting the SIGHUP listener");
+            console.log("Listener has detected a SIGHUP signal. Reloading the crontab json file.");
             this.handleNewConfigFile();
         });
     }

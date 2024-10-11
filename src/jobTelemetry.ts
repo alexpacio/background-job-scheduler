@@ -3,6 +3,7 @@ import TelegramBot from "node-telegram-bot-api";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { buildPrintConsoleEventMsg } from "./utils";
+import Mail from "nodemailer/lib/mailer";
 
 export interface TelegramAccessTokens {
     token: string;
@@ -51,7 +52,7 @@ export class JobTelemetry {
 
         this.jobMetadata = {
             jobExecutionId: randomUUID(),
-            startDate: null,
+            startDate: new Date(),
             endDate: null
         };
 
@@ -61,36 +62,44 @@ export class JobTelemetry {
         };
     }
 
-    private sendMessageOnTelegram(msg: string, sendOnlyWhenDebugIsActivated = false): Promise<TelegramBot.Message> {
+    private async sendMessageOnTelegram(msg: string, sendOnlyWhenDebugIsActivated = false): Promise<TelegramBot.Message> {
         if (this.telegramBot == null || (this.debugMode.telegram !== true && sendOnlyWhenDebugIsActivated === true)) {
             return;
         }
         try {
-            return this.telegramBot.sendMessage(this.params.telegramProvider.chatId, msg);
+            return await this.telegramBot.sendMessage(this.params.telegramProvider.chatId, msg);
         } catch (e) {
-            console.error(e);
+            console.error("Couldn't send the telegram bot message");
+            console.error("Telegram message to send:");
+            console.error(msg);
+            console.error("Error:");
+            console.error(e.body ?? e);
         }
     }
 
-    private sendMessageOnEmail(msg: string, subject: string, sendOnlyWhenDebugIsActivated = false): Promise<SMTPTransport.SentMessageInfo> {
+    private async sendMessageOnEmail(msg: string, subject: string, sendOnlyWhenDebugIsActivated = false): Promise<SMTPTransport.SentMessageInfo> {
         if (this.mailer == null || (this.debugMode.email !== true && sendOnlyWhenDebugIsActivated === true)) {
             return;
         }
+        const mailStruct: Mail.Options = {
+            from: process.env.SCHEDULER_EMAIL_SENDER_ADDRESS, // sender address
+            to: process.env.SCHEDULER_EMAIL_RECEIVERS, // list of receivers
+            subject: subject, // Subject line
+            text: msg, // plain text body
+        };
         try {
-            return this.mailer.sendMail({
-                from: process.env.SCHEDULER_EMAIL_SENDER_ADDRESS, // sender address
-                to: process.env.SCHEDULER_EMAIL_RECEIVERS, // list of receivers
-                subject: subject, // Subject line
-                text: msg, // plain text body
-            });
+            return await this.mailer.sendMail(mailStruct);
         } catch (e) {
-            console.error(e);
+            console.error("Couldn't send the email");
+            console.error("Mail struct to send:");
+            console.error(mailStruct);
+            console.error("Error:");
+            console.error(e.message ?? e);
         }
     }
 
 
     public async alertScheduleExecutionStarted() {
-        this.jobMetadata.startDate = new Date();
         const msg = buildPrintConsoleEventMsg({
             commandToExecute: this.commandToExecute,
             executionId: this.jobMetadata.jobExecutionId,

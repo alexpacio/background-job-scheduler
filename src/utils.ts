@@ -14,21 +14,21 @@ export interface IPrintFields {
 }
 
 function addLine(buf: string, line: string) {
-    buf += line + "\n";
+    return buf += line + "\n";
 }
 
 export function buildPrintConsoleEventMsg(fields: IPrintFields) {
     const delimiter = `----------------------------`;
     let msg = '';
-    addLine(msg, delimiter);
-    addLine(msg, fields.title);
-    addLine(msg, "executionId: " + fields.executionId);
-    addLine(msg, "commandToExecute: " + fields.commandToExecute);
-    addLine(msg, "scheduleParams: " + fields.scheduleParams);
-    if (fields.startDateAndTime) addLine(msg, "startDateAndTime: " + fields.startDateAndTime);
-    if (fields.executionTimeInSec)addLine(msg, "executionTimeInSec: " + fields.executionTimeInSec);
-    if (fields.outcome) addLine(msg, "outcome: " + fields.outcome);
-    if (fields.errorReason) addLine(msg, "errorReason: " + fields.errorReason);
-    addLine(msg, delimiter);
+    msg = addLine(msg, delimiter);
+    msg = addLine(msg, fields.title);
+    msg = addLine(msg, "executionId: " + fields.executionId);
+    msg = addLine(msg, "commandToExecute: " + fields.commandToExecute);
+    msg = addLine(msg, "scheduleParams: " + fields.scheduleParams);
+    if (fields.startDateAndTime) msg = addLine(msg, "startDateAndTime: " + fields.startDateAndTime);
+    if (fields.executionTimeInSec) msg = addLine(msg, "executionTimeInSec: " + fields.executionTimeInSec);
+    if (fields.outcome) msg = addLine(msg, "outcome: " + fields.outcome);
+    if (fields.errorReason) msg = addLine(msg, "errorReason: " + fields.errorReason);
+    msg = addLine(msg, delimiter);
     return msg;
 }
