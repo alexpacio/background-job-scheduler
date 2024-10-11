@@ -51,7 +51,7 @@ export class JobTelemetry {
 
         this.jobMetadata = {
             jobExecutionId: randomUUID(),
-            startDate: new Date(),
+            startDate: null,
             endDate: null
         };
 
@@ -90,6 +90,7 @@ export class JobTelemetry {
 
 
     public async alertScheduleExecutionStarted() {
+        this.jobMetadata.startDate = new Date();
         const msg = buildPrintConsoleEventMsg({
             commandToExecute: this.commandToExecute,
             executionId: this.jobMetadata.jobExecutionId,
